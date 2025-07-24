@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elgün Hosting - Tam Funksional Sayt</title>
+<style>
+  *{box-sizing:border-box;}
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+    color: white;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.5s, color 0.5s;
+  }
+  header {
+    background: #1e2a48;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.8rem;
+    user-select: none;
+    flex-grow: 1;
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0; padding: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  nav ul li {
+    margin-left: 0;
+  }
+  nav ul li button, nav ul li select {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background 0.3s;
+    font-weight: 600;
+  }
+  nav ul li button:hover,
+  nav ul li button.active,
+  nav ul li select:hover {
+    background: #3f51b5;
+  }
+
+  /* Dark mode styles */
+  body.dark {
+    background: #121212;
+    color: #ddd;
+  }
+  body.dark header {
+    background: #222;
+    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+  }
+  body.dark nav ul li button,
+  body.dark nav ul li select {
+    color: #ddd;
+  }
+  body.dark nav ul li button:hover,
+  body.dark nav ul li button.active {
+    background: #4a90e2;
+  }
+
+  main {
+    flex-grow: 1;
+    max-width: 900px;
+    margin: 30px auto 50px;
+    padding: 0 20px;
+    width: 100%;
+  }
+  section {
+    display: none;
+    background: rgba(0,0,0,0.3);
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease forwards;
+  }
+  section.active {
+    display: block;
+  }
+  h2 {
+    margin-top: 0;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin: 15px 0 5px;
+    font-weight: 500;
+  }
+  input[type="text"], input[type="password"], input[type="email"], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, textarea:focus {
+    outline: 2px solid #3f51b5;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  button[type="submit"], .btn-primary {
+    margin-top: 20px;
+    background: #3f51b5;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-radius: 8px;
+    padding: 12px 20px;
+    border: none;
+  }
+  button[type="submit"]:hover, .btn-primary:hover {
+    background: #303f9f;
+  }
+  #profileData p {
+    font-size: 1.1rem;
+    margin: 8px 0;
+  }
+  #supportStatus {
+    margin-top: 10px;
+    font-weight: 600;
+    text-align: center;
+  }
+  footer {
+    text-align: center;
+    background: #1e2a48;
+    color: #bbb;
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    user-select: none;
+  }
+
+  /* Chat box styles */
+  #chatSection {
+    max-height: 350px;
+    display: flex;
+    flex-direction: column;
+  }
+  #chatMessages {
+    flex-grow: 1;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+  #chatInput {
+    display: flex;
+    gap: 10px;
+  }
+  #chatInput input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  #chatInput button {
+    padding: 10px 15px;
+    background: #3f51b5;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #chatInput button:hover {
+    background: #303f9f;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 data-i18n="title">Elgün Hosting</h1>
+  <nav>
+    <ul id="menuNav">
+      <li><button class="nav-btn active" data-section="home" data-i18n="menu_home">Ana Səhifə</button></li>
+      <li><button class="nav-btn" data-section="login" data-i18n="menu_login">Giriş</button></li>
+      <li><button class="nav-btn" data-section="register" data-i18n="menu_register">Qeydiyyat</button></li>
+      <li><button class="nav-btn" data-section="profile" style="display:none;" data-i18n="menu_profile">Profil</button></li>
+      <li><button class="nav-btn" data-section="support" style="display:none;" data-i18n="menu_support">Dəstək</button></li>
+      <li><button class="nav-btn" data-section="chat" data-i18n="menu_chat">Chat</button></li>
+      <li><button class="nav-btn" data-section="about" data-i18n="menu_about">Haqqımızda</button></li>
+      <li><button class="nav-btn" data-section="contact" data-i18n="menu_contact">Əlaqə</button></li>
+      <li>
+        <select id="langSelect" aria-label="Dili seç">
+          <option value="tr">Türkçe</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
+      </li>
+      <li>
+        <button id="darkModeToggle" title="Dark mode toggle">Dark Mode</button>
+      </li>
+      <li><button id="logoutBtn" style="display:none;" class="nav-btn" data-i18n="menu_logout">Çıxış</button></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section id="home" class="active" aria-label="Home section">
+    <h2 data-i18n="welcome_title">Xoş Gəlmisiniz!</h2>
+    <p data-i18n="welcome_text">Elgün Hosting saytına xoş gəlmisiniz! Burada qeydiyyatdan keçərək və ya daxil olaraq xidmətlərimizdən yararlana bilərsiniz.</p>
+  </section>
+
+  <section id="login" aria-label="Login section">
+    <h2 data-i18n="login_title">Giriş</h2>
+    <form id="loginForm">
+      <label for="loginUsername" data-i18n="login_username">İstifadəçi adı:</label>
+      <input type="text" id="loginUsername" required autocomplete="username" />
+      <label for="loginPassword" data-i18n="login_password">Şifrə:</label>
+      <input type="password" id="loginPassword" required autocomplete="current-password" />
+      <button type="submit" data-i18n="login_button">Giriş</button>
+    </form>
+  </section>
+
+  <section id="register" aria-label="Register section">
+    <h2 data-i18n="register_title">Qeydiyyat</h2>
+    <form id="registerForm">
+      <label for="registerUsername" data-i18n="register_username">İstifadəçi adı:</label>
+      <input type="text" id="registerUsername" required autocomplete="username" />
+      <label for="registerPassword" data-i18n="register_password">Şifrə:</label>
+      <input type="password" id="registerPassword" required autocomplete="new-password" />
+      <button type="submit" data-i18n="register_button">Qeydiyyat</button>
+    </form>
+  </section>
+
+  <section id="profile" aria-label="Profile section">
+    <h2 data-i18n="profile_title">Profil</h2>
+    <div id="profileData">
+      <p><strong data-i18n="profile_username_label">İstifadəçi adı:</strong> <span id="profileUsername"></span></p>
+      <label for="avatarUpload" data-i18n="profile_avatar_label">Avatar yüklə:</label>
+      <input type="file" id="avatarUpload" accept="image/*" />
+      <div id="avatarPreview" style="margin-top:10px;">
+        <img src="" alt="Avatar Preview" style="max-width:150px; border-radius:50%; display:none;"/>
+      </div>
+    </div>
+  </section>
+
+  <section id="support" aria-label="Support section">
+    <h2 data-i18n="support_title">Dəstək</h2>
+    <label for="supportMessage" data-i18n="support_label">Mesajınızı yazın:</label>
+    <textarea id="supportMessage" placeholder="" data-i18n-placeholder="support_placeholder"></textarea>
+    <button id="sendSupport" class="btn-primary" data-i18n="support_send_button">Göndər</button>
+    <p id="supportStatus"></p>
+  </section>
+
+  <section id="chat" aria-label="Chat section">
+    <h2 data-i18n="chat_title">Real Vaxt Chat</h2>
+    <div id="chatSection">
+      <div id="chatMessages" role="log" aria-live="polite" aria-relevant="additions"></div>
+      <div id="chatInput">
+        <input type="text" id="chatMessageInput" placeholder="" data-i18n-placeholder="chat_input_placeholder" aria-label="Chat message input"/>
+        <button id="chatSendBtn" aria-label="Send chat message" data-i18n="chat_send_button">Göndər</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" aria-label="About section">
+    <h2 data-i18n="about_title">Haqqımızda</h2>
+    <p data-i18n="about_text">Biz Elgün Hosting olaraq, müştərilərimizə ən yaxşı hosting xidmətlərini təqdim etmək üçün çalışırıq. Məqsədimiz sadə, sürətli və etibarlı həllər verməkdir.</p>
+  </section>
+
+  <section id="contact" aria-label="Contact section">
+    <h2 data-i18n="contact_title">Əlaqə</h2>
+    <p data-i18n="contact_phone">Telefon nömrəsi: <strong>0559126138</strong></p>
+    <p><em data-i18n="contact_funny">Hakimidaya biz varsak, başqa kimse yoxdur xd</em></p>
+  </section>
+
+</main>
+
+<footer>
+  &copy; 2025 Elgün Hosting. <span data-i18n="footer_rights">Bütün hüquqlar qorunur.</span> Gəl, sən də qoşul!
+</footer>
+
+<script>
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const sections = document.querySelectorAll('main section');
+  const USERS_KEY = 'elgun_users';
+  const CURRENT_USER_KEY = 'elgun_currentUser';
+  const AVATAR_KEY = 'elgun_avatar';
+  const DARK_MODE_KEY = 'elgun_darkMode';
+
+  // i18n texts
+  const translations = {
+    tr: {
+      title: "Elgün Hosting",
+      menu_home: "Ana Səhifə",
+      menu_login: "Giriş",
+      menu_register: "Qeydiyyat",
+      menu_profile: "Profil",
+      menu_support: "Dəstək",
+      menu_chat: "Chat",
+      menu_about: "Haqqımızda",
+      menu_contact: "Əlaqə",
+      menu_logout: "Çıxış",
+      welcome_title: "Xoş Gəlmisiniz!",
+      welcome_text: "Elgün Hosting saytına xoş gəlmisiniz! Burada qeydiyyatdan keçərək və ya daxil olaraq xidmətlərimizdən yararlana bilərsiniz.",
+      login_title: "Giriş",
+      login_username: "İstifadəçi adı:",
+      login_password: "Şifrə:",
+      login_button: "Giriş",
+      register_title: "Qeydiyyat",
+      register_username: "İstifadəçi adı:",
+      register_password: "Şifrə:",
+      register_button: "Qeydiyyat",
+      profile_title: "Profil",
+      profile_username_label: "İstifadəçi adı:",
+      profile_avatar_label: "Avatar yüklə:",
+      support_title: "Dəstək",
+      support_label: "Mesajınızı yazın:",
+      support_placeholder: "Probleminizi və ya sualınızı yazın...",
+      support_send_button: "Göndər",
+      chat_title: "Real Vaxt Chat",
+      chat_input_placeholder: "Mesaj yazın...",
+      chat_send_button: "Göndər",
+      about_title: "Haqqımızda",
+      about_text: "Biz Elgün Hosting olaraq, müştərilərimizə ən yaxşı hosting xidmətlərini təqdim etmək üçün çalışırıq. Məqsədimiz sadə, sürətli və etibarlı həllər verməkdir.",
+      contact_title: "Əlaqə",
+      contact_phone: "Telefon nömrəsi: <strong>0559126138</strong>",
+      contact_funny: "Hakimidaya biz varsak, başqa kimse yoxdur xd",
+      footer_rights: "Bütün hüquqlar qorunur."
+    },
+    en: {
+      title: "Elgun Hosting",
+      menu_home: "Home",
+      menu_login: "Login",
+      menu_register: "Register",
+      menu_profile: "Profile",
+      menu_support: "Support",
+      menu_chat: "Chat",
+      menu_about: "About",
+      menu_contact: "Contact",
+      menu_logout: "Logout",
+      welcome_title: "Welcome!",
+      welcome_text: "Welcome to Elgun Hosting! Register or login to enjoy our services.",
+      login_title: "Login",
+      login_username: "Username:",
+      login_password: "Password:",
+      login_button: "Login",
+      register_title: "Register",
+      register_username: "Username:",
+      register_password: "Password:",
+      register_button: "Register",
+      profile_title: "Profile",
+      profile_username_label: "Username:",
+      profile_avatar_label: "Upload Avatar:",
+      support_title: "Support",
+      support_label: "Write your message:",
+      support_placeholder: "Write your problem or question...",
+      support_send_button: "Send",
+      chat_title: "Real Time Chat",
+      chat_input_placeholder: "Write a message...",
+      chat_send_button: "Send",
+      about_title: "About Us",
+      about_text: "At Elgun Hosting, we strive to provide the best hosting services. Our goal is simple, fast, and reliable solutions.",
+      contact_title: "Contact",
+      contact_phone: "Phone number: <strong>0559126138</strong>",
+      contact_funny: "If we are the boss, no one else matters xd",
+      footer_rights: "All rights reserved."
+    },
+    ru: {
+      title: "Эльгун Хостинг",
+      menu_home: "Главная",
+      menu_login: "Вход",
+      menu_register: "Регистрация",
+      menu_profile: "Профиль",
+      menu_support: "Поддержка",
+      menu_chat: "Чат",
+      menu_about: "О нас",
+      menu_contact: "Контакты",
+      menu_logout: "Выйти",
+      welcome_title: "Добро пожаловать!",
+      welcome_text: "Добро пожаловать на Elgun Hosting! Зарегистрируйтесь или войдите, чтобы воспользоваться нашими услугами.",
+      login_title: "Вход",
+      login_username: "Имя пользователя:",
+      login_password: "Пароль:",
+      login_button: "Войти",
+      register_title: "Регистрация",
+      register_username: "Имя пользователя:",
+      register_password: "Пароль:",
+      register_button: "Регистрация",
+      profile_title: "Профиль",
+      profile_username_label: "Имя пользователя:",
+      profile_avatar_label: "Загрузить аватар:",
+      support_title: "Поддержка",
+      support_label: "Напишите ваше сообщение:",
+      support_placeholder: "Опишите вашу проблему или вопрос...",
+      support_send_button: "Отправить",
+      chat_title: "Чат в реальном времени",
+      chat_input_placeholder: "Напишите сообщение...",
+      chat_send_button: "Отправить",
+      about_title: "О нас",
+      about_text: "В Elgun Hosting мы стремимся предоставлять лучшие услуги хостинга. Наша цель — простые, быстрые и надежные решения.",
+      contact_title: "Контакты",
+      contact_phone: "Телефон: <strong>0559126138</strong>",
+      contact_funny: "Если мы боссы, то никто другой не важен xd",
+      footer_rights: "Все права защищены."
+    }
+  };
+
+  // Dil dəyişməsi funksiyası
+  const applyTranslations = (lang) => {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(translations[lang] && translations[lang][key]){
+        el.innerHTML = translations[lang][key];
+      }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(translations[lang] && translations[lang][key]){
+        el.setAttribute('placeholder', translations[lang][key]);
+      }
+    });
+  };
+
+  // Bölmə dəyişmək funksiyası
+  function showSection(id){
+    sections.forEach(s=>{
+      if(s.id === id){
+        s.classList.add('active');
+      } else {
+        s.classList.remove('active');
+      }
+    });
+    navButtons.forEach(btn=>{
+      btn.classList.toggle('active', btn.getAttribute('data-section')===id);
+    });
+  }
+
+  // LocalStorage istifadəçilər və cari istifadəçi
+  function getUsers(){
+    return JSON.parse(localStorage.getItem(USERS_KEY)) || {};
+  }
+  function saveUsers(users){
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+  function getCurrentUser(){
+    return localStorage.getItem(CURRENT_USER_KEY);
+  }
+  function setCurrentUser(username){
+    localStorage.setItem(CURRENT_USER_KEY, username);
+  }
+  function logoutUser(){
+    localStorage.removeItem(CURRENT_USER_KEY);
+  }
+
+  // Avatar
+  function saveAvatar(username, dataUrl){
+    const avatars = JSON.parse(localStorage.getItem(AVATAR_KEY) || "{}");
+    avatars[username] = dataUrl;
+    localStorage.setItem(AVATAR_KEY, JSON.stringify(avatars));
+  }
+  function getAvatar(username){
+    const avatars = JSON.parse(localStorage.getItem(AVATAR_KEY) || "{}");
+    return avatars[username] || '';
+  }
+
+  // İstifadəçi giriş və qeydiyyat
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const profileUsernameSpan = document.getElementById('profileUsername');
+  const avatarUploadInput = document.getElementById('avatarUpload');
+  const avatarPreviewImg = document.querySelector('#avatarPreview img');
+
+  function updateUIOnLogin(){
+    const username = getCurrentUser();
+    if(!username) return;
+    profileUsernameSpan.textContent = username;
+    const avatar = getAvatar(username);
+    if(avatar){
+      avatarPreviewImg.src = avatar;
+      avatarPreviewImg.style.display = 'block';
+    } else {
+      avatarPreviewImg.style.display = 'none';
+    }
+
+    // Menu düymələrini göstər/gizləndir
+    document.querySelector('button[data-section="login"]').style.display = 'none';
+    document.querySelector('button[data-section="register"]').style.display = 'none';
+    document.querySelector('button[data-section="profile"]').style.display = 'inline-block';
+    document.querySelector('button[data-section="support"]').style.display = 'inline-block';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+
+    // Profil bölməsini aç
+    showSection('profile');
+  }
+
+  function updateUIOnLogout(){
+    document.querySelector('button[data-section="login"]').style.display = 'inline-block';
+    document.querySelector('button[data-section="register"]').style.display = 'inline-block';
+    document.querySelector('button[data-section="profile"]').style.display = 'none';
+    document.querySelector('button[data-section="support"]').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';
+    showSection('home');
+  }
+
+  loginForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const username = loginForm.loginUsername.value.trim();
+    const password = loginForm.loginPassword.value.trim();
+    const users = getUsers();
+    if(users[username] && users[username].password === password){
+      setCurrentUser(username);
+      updateUIOnLogin();
+      alert("Uğurlu giriş!");
+      loginForm.reset();
+    } else {
+      alert("İstifadəçi adı və ya şifrə səhvdir!");
+    }
+  });
+
+  registerForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const username = registerForm.registerUsername.value.trim();
+    const password = registerForm.registerPassword.value.trim();
+    const users = getUsers();
+    if(users[username]){
+      alert("Bu istifadəçi adı artıq mövcuddur!");
+    } else {
+      users[username] = {password};
+      saveUsers(users);
+      alert("Qeydiyyat uğurla tamamlandı! İndi giriş edə bilərsiniz.");
+      registerForm.reset();
+      showSection('login');
+    }
+  });
+
+  avatarUploadInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      avatarPreviewImg.src = ev.target.result;
+      avatarPreviewImg.style.display = 'block';
+      // Yaddaşa yaz
+      const username = getCurrentUser();
+      if(username) saveAvatar(username, ev.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    logoutUser();
+    updateUIOnLogout();
+    alert("Çıxış etdiniz.");
+  });
+
+  // Menü düymələrinə klik
+  navButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sec = btn.getAttribute('data-section');
+      // Giriş tələb olunan səhifələr üçün yoxlama
+      if(['profile','support'].includes(sec) && !getCurrentUser()){
+        alert("Zəhmət olmasa əvvəlcə daxil olun.");
+        showSection('login');
+        return;
+      }
+      showSection(sec);
+    });
+  });
+
+  // Support bölməsi
+  document.getElementById('sendSupport').addEventListener('click', ()=>{
+    const msg = document.getElementById('supportMessage').value.trim();
+    if(!msg){
+      alert("Mesaj yazın!");
+      return;
+    }
+    // Fake göndərmə (server yox)
+    document.getElementById('supportStatus').textContent = "Mesajınız göndərildi. Təşəkkürlər!";
+    setTimeout(()=>{
+      document.getElementById('supportStatus').textContent = "";
+      document.getElementById('supportMessage').value = "";
+    }, 3000);
+  });
+
+  // Chat fake real vaxt (localStorage istifadə)
+  const chatMessagesDiv = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatMessageInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
+  const CHAT_KEY = 'elgun_chat_messages';
+
+  function loadChat(){
+    const msgs = JSON.parse(localStorage.getItem(CHAT_KEY) || "[]");
+    chatMessagesDiv.innerHTML = '';
+    msgs.forEach(m=>{
+      const div = document.createElement('div');
+      div.textContent = `${m.user}: ${m.text}`;
+      chatMessagesDiv.appendChild(div);
+    });
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+  }
+
+  function saveChatMessage(user,text){
+    const msgs = JSON.parse(localStorage.getItem(CHAT_KEY) || "[]");
+    msgs.push({user,text});
+    localStorage.setItem(CHAT_KEY, JSON.stringify(msgs));
+  }
+
+  chatSendBtn.addEventListener('click', ()=>{
+    const text = chatInput.value.trim();
+    const user = getCurrentUser() || "Qonaq";
+    if(!text) return;
+    saveChatMessage(user,text);
+    loadChat();
+    chatInput.value = '';
+  });
+
+  chatInput.addEventListener('keydown', e=>{
+    if(e.key === "Enter"){
+      e.preventDefault();
+      chatSendBtn.click();
+    }
+  });
+
+  // Dil seçimi
+  const langSelect = document.getElementById('langSelect');
+  function setLang(lang){
+    applyTranslations(lang);
+    langSelect.value = lang;
+  }
+  langSelect.addEventListener('change', ()=>{
+    setLang(langSelect.value);
+  });
+
+  // Dark mode
+  const darkToggleBtn = document.getElementById('darkModeToggle');
+  function applyDarkMode(enabled){
+    if(enabled){
+      document.body.classList.add('dark');
+      darkToggleBtn.textContent = 'Light Mode';
+    } else {
+      document.body.classList.remove('dark');
+      darkToggleBtn.textContent = 'Dark Mode';
+    }
+    localStorage.setItem(DARK_MODE_KEY, enabled ? 'true' : 'false');
+  }
+  darkToggleBtn.addEventListener('click', ()=>{
+    const enabled = document.body.classList.contains('dark');
+    applyDarkMode(!enabled);
+  });
+
+  // Sayfa açıldığında ilkin vəziyyət
+  window.addEventListener('DOMContentLoaded', ()=>{
+    // Dil default tr, yaddaşdan varsa ondan
+    const savedLang = localStorage.getItem('elgun_lang') || 'tr';
+    setLang(savedLang);
+    langSelect.value = savedLang;
+
+    // Dark mode yaddaşdan oxu
+    const darkSaved = localStorage.getItem(DARK_MODE_KEY) === 'true';
+    applyDarkMode(darkSaved);
+
+    // Giriş yoxla
+    if(getCurrentUser()){
+      updateUIOnLogin();
+    } else {
+      updateUIOnLogout();
+    }
+    loadChat();
+  });
+
+  // Dil yaddaşda saxla
+  langSelect.addEventListener('change', ()=>{
+    localStorage.setItem('elgun_lang', langSelect.value);
+  });
+
+</script>
+
+</body>
+</html>
